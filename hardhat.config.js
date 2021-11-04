@@ -13,7 +13,6 @@ module.exports = {
       url: `https://rnl9tzxcm93a.usemoralis.com:2053/server/${projectId}`,
       accounts: [privateKey]
     },
-    mainnet: {}
   },
   solidity: "0.8.4",
 };
