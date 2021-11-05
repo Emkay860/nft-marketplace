@@ -2,7 +2,7 @@ require("@nomiclabs/hardhat-waffle");
 const fs = require("fs");
 
 const privateKey = fs.readFileSync(".secret").toString();
-const projectId = "evXVt1m95dXpPeuei7XR7IDSJmW0Dv1sOW7xA6yh";
+const projectId = "583d94e4544e458eb60bda422e005d49";
 
 module.exports = {
   networks: {
@@ -10,7 +10,7 @@ module.exports = {
       chainId: 1337
     },
     mumbai: {
-      url: `https://rnl9tzxcm93a.usemoralis.com:2053/server/${projectId}`,
+      url: `https://polygon-mumbai.infura.io/v3/${projectId}`,
       accounts: [privateKey]
     },
   },
