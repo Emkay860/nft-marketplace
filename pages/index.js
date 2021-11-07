@@ -11,6 +11,7 @@ import Market from '../artifacts/contracts/NFTMarket.sol/NFTMarket.json';
 export default function Home() {
   const [nfts, setNfts] = useState([]);
   const [loadingState, setLoadingState] = useState('not-loaded');
+  // const [signer, setSigner] = useState()
 
   useEffect(() => {
     loadNFTs();
@@ -103,6 +104,9 @@ export default function Home() {
                 <p className="text-2xl mb-4 font-bold text-white">
                   {nft.price} Matic
                 </p>
+                {/* {
+                  check if current user is not the seller
+                } */}
                 <button
                   className="w-full bg-purple-500 text-white font-bold py-2 px-12 rounded"
                   onClick={() => buyNft(nft)}
