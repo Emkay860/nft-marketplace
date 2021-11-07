@@ -20,9 +20,12 @@ export default function MyNFTs({ loadingState, nfts }) {
                 alt=""
               />
               <div className="p-4 bg-black">
-                <p className="text-2xl font-bold text-white">
+                <p className="text-2xl font-bold text-white mb-4">
                   Price - {nft.price} Matic
                 </p>
+                <button className="w-full bg-red-500 text-white font-bold py-2 px-12 rounded hover:bg-red-600">
+                  SELL
+                </button>
               </div>
             </div>
           ))}

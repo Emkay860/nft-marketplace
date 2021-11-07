@@ -21,6 +21,7 @@ contract NFTMarket is ReentrancyGuard {
     /** 
      * @dev A struct to to store market items listed
      * @note Possible addition of royalty feature to ensure initial creator income
+     * @note Add a boolean `listed` to know items that have been listed but not sold
      */
     struct MarketItem {
         uint itemId;
@@ -36,6 +37,7 @@ contract NFTMarket is ReentrancyGuard {
 
     /** 
      * @dev An event emitted whenever a new Item is listed
+     *  
      */
     event MarketItemCreated (
         uint indexed itemId,
@@ -80,6 +82,7 @@ contract NFTMarket is ReentrancyGuard {
         // Emit `MarketItemCreated` event once a new nft is successfully listed
         emit MarketItemCreated(itemId, nftContract, tokenId, msg.sender, address(0), price, false);
     }
+
 
     function createMarketSale(address nftContract, uint256 itemId) public payable nonReentrant {
 
