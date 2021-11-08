@@ -4,6 +4,7 @@ import Web3Modal from 'web3modal';
 import axios from 'axios';
 
 import MyNFTs from '../components/my-assets';
+import CreateSaleModal from '../components/sell-item';
 
 import { nftaddress, nftmarketaddress } from '../config';
 
@@ -15,6 +16,11 @@ export default function CreatorDashboard() {
   const [purchasedNfts, setPurchasedNfts] = useState([]);
   const [sold, setSold] = useState([]);
   const [loadingState, setLoadingState] = useState('not-loaded');
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedAssetId, setSelectedAssetId] = useState({
+    tokenId: '',
+    itemId: '',
+  });
 
   useEffect(() => {
     loadNFTs();
@@ -46,6 +52,8 @@ export default function CreatorDashboard() {
           owner: i.owner,
           sold: i.sold,
           image: meta.data.image,
+          name: meta.data.name,
+          itemId: i.itemId.toNumber(),
         };
         return item;
       })
@@ -81,6 +89,8 @@ export default function CreatorDashboard() {
           seller: i.seller,
           owner: i.owner,
           image: meta.data.image,
+          name: meta.data.name,
+          itemId: i.itemId.toNumber(),
         };
         return item;
       })
@@ -89,27 +99,56 @@ export default function CreatorDashboard() {
     setLoadingState('loaded');
   }
 
-  if (loadingState === 'loaded' && !nfts.length)
+  async function sellNFT({ tokenId, itemId }, e) {
+    setIsOpen(true);
+    setSelectedAssetId({ tokenId, itemId });
+  }
+
+  async function createSale(assetPrice) {
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+    const signer = provider.getSigner();
+
+    const tokenId = selectedAssetId.tokenId;
+    const itemId = selectedAssetId.itemId;
+    let price = ethers.utils.parseUnits(assetPrice, 'ether');
+
+    // approve the marketplace to transfer from token contract
+    let tokenContract = new ethers.Contract(nftaddress, NFT.abi, signer);
+    let tx = await tokenContract.approve(
+      nftmarketaddress,
+      selectedAssetId.tokenId
+    );
+    await tx.wait();
+
+    // list the new nft to the marketplace
+    let contract = new ethers.Contract(nftmarketaddress, Market.abi, signer);
+    let listingPrice = await contract.getListingPrice();
+    listingPrice = listingPrice.toString();
+
+    let transaction = await contract.sellItem(
+      nftaddress,
+      tokenId,
+      itemId,
+      price,
+      {
+        value: listingPrice,
+      }
+    );
+    await transaction.wait();
+
+    setIsOpen(false);
+    loadPurchasedNFTs(provider, signer);
+  }
+
+  if (loadingState === 'loaded' && !nfts.length && !purchasedNfts.length)
     return <h1 className="py-10 px-20 text-3xl">No assets created</h1>;
   return (
     <div>
       <div className="p-4">
         <h2 className="text-2xl py-2">Items Created</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
-          {nfts.map((nft, i) => (
-            <div
-              key={i}
-              className="border shadow rounded-xl overflow-hidden bg-black"
-            >
-              <img src={nft.image} className="rounded" />
-              <div className="p-4 bg-black">
-                <p className="text-2xl font-bold text-white">
-                  Price - {nft.price} Matic
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
+        <MyNFTs loadingState={loadingState} nfts={nfts} />
       </div>
       <div className="px-4">
         {Boolean(sold.length) && (
@@ -124,10 +163,19 @@ export default function CreatorDashboard() {
         {Boolean(purchasedNfts.length) && (
           <div>
             <h2 className="text-2xl py-2">Items Puchased</h2>
-            <MyNFTs loadingState={loadingState} nfts={purchasedNfts} />
+            <MyNFTs
+              loadingState={loadingState}
+              nfts={purchasedNfts}
+              sellNFT={sellNFT}
+            />
           </div>
         )}
       </div>
+      <CreateSaleModal
+        open={isOpen}
+        setOpen={setIsOpen}
+        createSale={createSale}
+      />
     </div>
   );
 }

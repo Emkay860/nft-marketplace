@@ -31,6 +31,7 @@ contract NFTMarket is ReentrancyGuard {
         address payable owner;
         uint256 price;
         bool sold;
+        bool listed;
     }
 
     mapping(uint256 => MarketItem) private idToMarketItem;
@@ -46,7 +47,8 @@ contract NFTMarket is ReentrancyGuard {
         address seller,
         address owner,
         uint256 price,
-        bool sold
+        bool sold,
+        bool listed
     );
 
     constructor(){
@@ -73,14 +75,15 @@ contract NFTMarket is ReentrancyGuard {
             payable(msg.sender),
             payable(address(0)),
             price,
-            false
+            false,
+            true
         );
 
         // Transfer ownership of nft from the seller to the marketplace contract
         IERC721(nftContract).transferFrom(msg.sender, address(this), tokenId);
 
         // Emit `MarketItemCreated` event once a new nft is successfully listed
-        emit MarketItemCreated(itemId, nftContract, tokenId, msg.sender, address(0), price, false);
+        emit MarketItemCreated(itemId, nftContract, tokenId, msg.sender, address(0), price, false, true);
     }
 
 
@@ -99,6 +102,8 @@ contract NFTMarket is ReentrancyGuard {
         // Set item sold value to `true`
         idToMarketItem[itemId].sold = true;
         _itemsSold.increment();
+        // set item listed property to `false`
+        idToMarketItem[itemId].listed = false;
 
         // Transfer listing price for the nft to the contract owner
         payable(owner).transfer(listingPrice);
@@ -190,6 +195,33 @@ contract NFTMarket is ReentrancyGuard {
         
         return items;
     }
+
+
+    
+   /**
+     * @dev Gets all items that a user created i.e seller equals `msg.sender`
+     */
+     function sellItem(address nftContract, uint256 tokenId, uint256 itemId, uint256 price) public payable nonReentrant  {
+        require(price > 0, "Price must be at least 1 wei");
+        require(msg.value == listingPrice, "Price must be equal to listing price");
+
+        idToMarketItem[itemId] = MarketItem(
+            itemId,
+            nftContract,
+            tokenId,
+            payable(msg.sender),
+            payable(address(0)),
+            price,
+            false,
+            true
+        );
+
+        // Transfer ownership of nft from the seller to the marketplace contract
+        IERC721(nftContract).transferFrom(msg.sender, address(this), tokenId);
+        _itemsSold.decrement();
+        // Emit `MarketItemCreated` event once a new nft is successfully listed
+        emit MarketItemCreated(itemId, nftContract, tokenId, msg.sender, address(0), price, false, true);
+     }
 
 
 }
