@@ -1,23 +1,11 @@
 import '../styles/globals.css';
 import Link from 'next/link';
+import Navbar from '../components/navbar';
 
 function MyApp({ Component, pageProps }) {
   return (
     <div>
-      <nav className="border-b p-6">
-        <p className="text-4xl font-bold">Multiverse Marketplace</p>
-        <div className="flex mt-4">
-          <Link href="/">
-            <a className="mr-4 text-purple-500">Home</a>
-          </Link>
-          <Link href="/create-item">
-            <a className="mr-6 text-purple-500">Sell Digital Asset</a>
-          </Link>
-          <Link href="/creator-dashboard">
-            <a className="mr-6 text-purple-500">Dashboard</a>
-          </Link>
-        </div>
-      </nav>
+      <Navbar />
       <Component {...pageProps} />
     </div>
   );

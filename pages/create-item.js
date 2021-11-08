@@ -108,11 +108,26 @@ export default function CreateItem() {
   }
 
   return (
-    <div className="flex justify-center">
-      <div className="w-1/2 flex flex-col pb-12">
+    <div className="flex justify-center my-12">
+      <div className="sm:w-1/2 lg:w-1/3 xl:w-1/4 flex flex-col pb-12 border shadow rounded-xl">
+        {fileUrl && (
+          <Image
+            className="rounded mt-4"
+            width="250"
+            height="200"
+            src={fileUrl}
+            alt=""
+          />
+        )}
+        <input
+          type="file"
+          name="Asset"
+          className="mx-auto my-4 border-2 rounded-md w-52 "
+          onChange={onChange}
+        />
         <input
           placeholder="Asset Name"
-          className="mt-8 border rounded p-4"
+          className="mt-8 mx-4 border rounded-2xl p-4"
           onChange={(e) =>
             updateFormInput({ ...formInput, name: e.target.value })
           }
@@ -120,7 +135,7 @@ export default function CreateItem() {
         />
         <textarea
           placeholder="Asset Description"
-          className="mt-2 border rounded p-4"
+          className="mt-2 mx-4 border rounded-2xl p-4"
           onChange={(e) =>
             updateFormInput({ ...formInput, description: e.target.value })
           }
@@ -128,33 +143,24 @@ export default function CreateItem() {
         />
         <input
           placeholder="Asset Price in Matic"
-          className="mt-2 border rounded p-4"
+          className="mt-2 mx-4 border rounded p-4"
           onChange={(e) =>
             updateFormInput({ ...formInput, price: e.target.value })
           }
           required
         />
-        <input type="file" name="Asset" className="my-4" onChange={onChange} />
-        {fileUrl && (
-          <Image
-            className="rounded mt-4"
-            width="200"
-            height="200"
-            src={fileUrl}
-            alt=""
-          />
-        )}
+
         {nftCreated ? (
           <button
             onClick={createSale}
-            className="font-bold mt-4 bg-purple-500 text-white rounded p-4 shadow-lg active:bg-purple-600 disabled:opacity-50"
+            className="font-bold mt-4 mx-2 bg-purple-500 text-white rounded p-4 shadow-lg active:bg-purple-600 disabled:opacity-50"
           >
             Sell NFT
           </button>
         ) : (
           <button
             onClick={createItem}
-            className="font-bold mt-4 bg-purple-500 text-white rounded p-4 shadow-lg active:bg-purple-600 disabled:opacity-50"
+            className="font-bold mt-4 mx-2 bg-purple-500 text-white rounded-2xl p-4 shadow-lg active:bg-purple-600 disabled:opacity-50"
             disabled={disabled}
           >
             Create NFT
