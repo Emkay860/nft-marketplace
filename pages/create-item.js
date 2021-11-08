@@ -20,6 +20,7 @@ export default function CreateItem() {
     description: '',
   });
   const router = useRouter();
+  const [disabled, setDisabled] = useState(true);
 
   async function onChange(e) {
     const file = e.target.files[0];
@@ -29,6 +30,7 @@ export default function CreateItem() {
       });
       const url = `https://ipfs.infura.io/ipfs/${added.path}`;
       setFileUrl(url);
+      setDisabled(false);
     } catch (error) {
       console.log(error);
     }
@@ -95,6 +97,7 @@ export default function CreateItem() {
           onChange={(e) =>
             updateFormInput({ ...formInput, name: e.target.value })
           }
+          required
         />
         <textarea
           placeholder="Asset Description"
@@ -102,6 +105,7 @@ export default function CreateItem() {
           onChange={(e) =>
             updateFormInput({ ...formInput, description: e.target.value })
           }
+          required
         />
         <input
           placeholder="Asset Price in Matic"
@@ -109,6 +113,7 @@ export default function CreateItem() {
           onChange={(e) =>
             updateFormInput({ ...formInput, price: e.target.value })
           }
+          required
         />
         <input type="file" name="Asset" className="my-4" onChange={onChange} />
         {fileUrl && (
@@ -122,7 +127,8 @@ export default function CreateItem() {
         )}
         <button
           onClick={createItem}
-          className="font-bold mt-4 bg-purple-500 text-white rounded p-4 shadow-lg hover:bg-purple-600"
+          className="font-bold mt-4 bg-purple-500 text-white rounded p-4 shadow-lg active:bg-purple-600 disabled:opacity-50"
+          disabled={disabled}
         >
           Create Digital Asset
         </button>
