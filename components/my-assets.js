@@ -48,9 +48,11 @@ export default function MyNFTs({
                     SELL
                   </button>
                 ) : (
-                  <p className="text-3xl font-bold text-red-500 mb-4">
-                    Item Sold
-                  </p>
+                  nft.sold == true && (
+                    <p className="text-3xl font-bold text-red-500 mb-4">
+                      Item Sold
+                    </p>
+                  )
                 )}
               </div>
             </div>
