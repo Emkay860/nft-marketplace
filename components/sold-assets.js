@@ -1,12 +1,6 @@
 import Image from 'next/image';
 
-export default function MyNFTs({
-  loadingState,
-  nfts,
-  sellNFT = false,
-  currentUser,
-}) {
-  const zeroAddress = '0x0000000000000000000000000000000000000000';
+export default function MySoldNFTs({ loadingState, nfts }) {
   if (loadingState === 'loaded' && !nfts.length)
     return <h1 className="py-10 px-20 text-3xl">No assets owned</h1>;
   return (
@@ -37,21 +31,6 @@ export default function MyNFTs({
                 <p className="text-2xl font-bold text-white mb-4">
                   Price - {nft.price} Matic
                 </p>
-                {nft.listed == false &&
-                (nft.owner === zeroAddress || nft.owner === currentUser) ? (
-                  <button
-                    onClick={(tokenId, e) =>
-                      sellNFT({ tokenId: nft.tokenId, itemId: nft.itemId })
-                    }
-                    className="w-full bg-red-500 text-white font-bold py-2 px-12 rounded hover:bg-red-600"
-                  >
-                    SELL
-                  </button>
-                ) : (
-                  <p className="text-3xl font-bold text-red-500 mb-4">
-                    Item Sold
-                  </p>
-                )}
               </div>
             </div>
           ))}

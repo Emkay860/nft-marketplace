@@ -4,6 +4,7 @@ import Web3Modal from 'web3modal';
 import axios from 'axios';
 
 import MyNFTs from '../components/my-assets';
+import MySoldNFTs from '../components/sold-assets';
 import CreateSaleModal from '../components/sell-item';
 
 import { nftaddress, nftmarketaddress } from '../config';
@@ -21,6 +22,7 @@ export default function CreatorDashboard() {
     tokenId: '',
     itemId: '',
   });
+  const [currentUser, setCurrentUser] = useState('');
 
   useEffect(() => {
     loadNFTs();
@@ -54,6 +56,7 @@ export default function CreatorDashboard() {
           image: meta.data.image,
           name: meta.data.name,
           itemId: i.itemId.toNumber(),
+          listed: i.listed,
         };
         return item;
       })
@@ -63,7 +66,7 @@ export default function CreatorDashboard() {
     setSold(soldItems);
     setNfts(items);
     setLoadingState('loaded');
-
+    setCurrentUser(await signer.getAddress());
     // load all purchased NFTs
     loadPurchasedNFTs(provider, signer);
   }
@@ -91,6 +94,8 @@ export default function CreatorDashboard() {
           image: meta.data.image,
           name: meta.data.name,
           itemId: i.itemId.toNumber(),
+          listed: i.listed,
+          sold: i.sold,
         };
         return item;
       })
@@ -148,13 +153,18 @@ export default function CreatorDashboard() {
     <div>
       <div className="p-4">
         <h2 className="text-2xl py-2">Items Created</h2>
-        <MyNFTs loadingState={loadingState} nfts={nfts} />
+        <MyNFTs
+          loadingState={loadingState}
+          nfts={nfts}
+          sellNFT={sellNFT}
+          currentUser={currentUser}
+        />
       </div>
       <div className="px-4">
         {Boolean(sold.length) && (
           <div>
             <h2 className="text-2xl py-2">Items sold</h2>
-            <MyNFTs loadingState={loadingState} nfts={sold} />
+            <MySoldNFTs loadingState={loadingState} nfts={sold} />
           </div>
         )}
       </div>
@@ -167,6 +177,7 @@ export default function CreatorDashboard() {
               loadingState={loadingState}
               nfts={purchasedNfts}
               sellNFT={sellNFT}
+              currentUser={currentUser}
             />
           </div>
         )}
