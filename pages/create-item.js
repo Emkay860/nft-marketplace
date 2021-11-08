@@ -21,6 +21,8 @@ export default function CreateItem() {
   });
   const router = useRouter();
   const [disabled, setDisabled] = useState(true);
+  const [tokenId, setTokenId] = useState('');
+  const [nftCreated, setNftCreated] = useState(false);
 
   async function onChange(e) {
     const file = e.target.files[0];
@@ -52,13 +54,15 @@ export default function CreateItem() {
       const added = await client.add(data);
       const url = `https://ipfs.infura.io/ipfs/${added.path}`;
       console.log(url);
-      createSale(url);
+      createNFT(url);
     } catch (error) {
       console.log('Error uploading file: ', error);
     }
   }
 
-  async function createSale(url) {
+  async function createNFT(url) {
+    setDisabled(true);
+
     const web3Modal = new Web3Modal();
     const connection = await web3Modal.connect();
     const provider = new ethers.providers.Web3Provider(connection);
@@ -72,17 +76,32 @@ export default function CreateItem() {
     let event = tx.events[0];
     let value = event.args[2];
     let tokenId = value.toNumber();
+    setTokenId(tokenId);
+    setNftCreated(true);
+  }
+
+  // call this function to list aan already minted NFT
+  async function createSale() {
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+    const signer = provider.getSigner();
 
     const price = ethers.utils.parseUnits(formInput.price, 'ether');
 
     // list the new nft to the marketplace
-    contract = new ethers.Contract(nftmarketaddress, Market.abi, signer);
+    let contract = new ethers.Contract(nftmarketaddress, Market.abi, signer);
     let listingPrice = await contract.getListingPrice();
     listingPrice = listingPrice.toString();
 
-    transaction = await contract.createMarketItem(nftaddress, tokenId, price, {
-      value: listingPrice,
-    });
+    let transaction = await contract.createMarketItem(
+      nftaddress,
+      tokenId,
+      price,
+      {
+        value: listingPrice,
+      }
+    );
     await transaction.wait();
 
     router.push('/');
@@ -125,13 +144,22 @@ export default function CreateItem() {
             alt=""
           />
         )}
-        <button
-          onClick={createItem}
-          className="font-bold mt-4 bg-purple-500 text-white rounded p-4 shadow-lg active:bg-purple-600 disabled:opacity-50"
-          disabled={disabled}
-        >
-          Create Digital Asset
-        </button>
+        {nftCreated ? (
+          <button
+            onClick={createSale}
+            className="font-bold mt-4 bg-purple-500 text-white rounded p-4 shadow-lg active:bg-purple-600 disabled:opacity-50"
+          >
+            Sell NFT
+          </button>
+        ) : (
+          <button
+            onClick={createItem}
+            className="font-bold mt-4 bg-purple-500 text-white rounded p-4 shadow-lg active:bg-purple-600 disabled:opacity-50"
+            disabled={disabled}
+          >
+            Create NFT
+          </button>
+        )}
       </div>
     </div>
   );
