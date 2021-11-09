@@ -6,6 +6,7 @@ import axios from 'axios';
 import MyNFTs from '../components/my-assets';
 import MySoldNFTs from '../components/sold-assets';
 import CreateSaleModal from '../components/sell-item';
+import { Tab } from '@headlessui/react';
 
 import { nftaddress, nftmarketaddress } from '../config';
 
@@ -147,11 +148,89 @@ export default function CreatorDashboard() {
     loadPurchasedNFTs(provider, signer);
   }
 
+  function classNames(...classes) {
+    return classes.filter(Boolean).join(' ');
+  }
+
   if (loadingState === 'loaded' && !nfts.length && !purchasedNfts.length)
     return <h1 className="py-10 px-20 text-3xl">No assets created</h1>;
   return (
-    <div>
-      <div className="p-4">
+    <div className="sm:w-full lg:w-9/12 mx-auto px-2 py-16 ">
+      <Tab.Group>
+        <Tab.List className="flex p-1 space-x-1 bg-purple-800 rounded-xl">
+          <Tab
+            className={({ selected }) =>
+              classNames(
+                'w-full py-2.5 text-sm leading-5 font-medium text-purple-200 rounded-lg',
+                'focus:outline-none focus:ring-2 focus:text-purple-700 ring-offset-2 ring-offset-purple-400 ring-white ring-opacity-60',
+                selected
+                  ? 'bg-white shadow'
+                  : 'text-blue-100 hover:bg-white/[0.12] hover:text-white'
+              )
+            }
+          >
+            Items Created
+          </Tab>
+          <Tab
+            className={({ selected }) =>
+              classNames(
+                'w-full py-2.5 text-sm leading-5 font-medium text-purple-200 rounded-lg',
+                'focus:outline-none focus:ring-2 ring-offset-2 focus:text-purple-700  ring-offset-purple-400 ring-white ring-opacity-60',
+                selected
+                  ? 'bg-white shadow'
+                  : 'text-blue-100 hover:bg-white/[0.12] hover:text-white'
+              )
+            }
+          >
+            Items sold
+          </Tab>
+          <Tab
+            className={({ selected }) =>
+              classNames(
+                'w-full py-2.5 text-sm leading-5 font-medium text-purple-200 rounded-lg',
+                'focus:outline-none focus:ring-2 ring-offset-2 focus:text-purple-700  ring-offset-purple-400 ring-white ring-opacity-60',
+                selected
+                  ? 'bg-white shadow'
+                  : 'text-blue-100 hover:bg-white/[0.12] hover:text-white'
+              )
+            }
+          >
+            Items Puchased
+          </Tab>
+        </Tab.List>
+        <Tab.Panels className="mt-2">
+          <Tab.Panel className={classNames('bg-white rounded-xl p-3')}>
+            {' '}
+            {Boolean(sold.length) && (
+              <div>
+                <MySoldNFTs loadingState={loadingState} nfts={sold} />
+              </div>
+            )}
+          </Tab.Panel>
+          <Tab.Panel className={classNames('bg-white rounded-xl p-3')}>
+            {' '}
+            {Boolean(sold.length) && (
+              <div>
+                <MySoldNFTs loadingState={loadingState} nfts={sold} />
+              </div>
+            )}
+          </Tab.Panel>
+          <Tab.Panel className={classNames('bg-white rounded-xl p-3')}>
+            {' '}
+            {Boolean(purchasedNfts.length) && (
+              <div>
+                <MyNFTs
+                  loadingState={loadingState}
+                  nfts={purchasedNfts}
+                  sellNFT={sellNFT}
+                  currentUser={currentUser}
+                />
+              </div>
+            )}
+          </Tab.Panel>
+        </Tab.Panels>
+      </Tab.Group>
+      {/* <div className="p-4">
         <h2 className="text-2xl py-2">Items Created</h2>
         <MyNFTs
           loadingState={loadingState}
@@ -181,7 +260,7 @@ export default function CreatorDashboard() {
             />
           </div>
         )}
-      </div>
+      </div> */}
       <CreateSaleModal
         open={isOpen}
         setOpen={setIsOpen}
