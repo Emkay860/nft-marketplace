@@ -230,37 +230,6 @@ export default function CreatorDashboard() {
           </Tab.Panel>
         </Tab.Panels>
       </Tab.Group>
-      {/* <div className="p-4">
-        <h2 className="text-2xl py-2">Items Created</h2>
-        <MyNFTs
-          loadingState={loadingState}
-          nfts={nfts}
-          sellNFT={sellNFT}
-          currentUser={currentUser}
-        />
-      </div>
-      <div className="px-4">
-        {Boolean(sold.length) && (
-          <div>
-            <h2 className="text-2xl py-2">Items sold</h2>
-            <MySoldNFTs loadingState={loadingState} nfts={sold} />
-          </div>
-        )}
-      </div>
-
-      <div className="px-4">
-        {Boolean(purchasedNfts.length) && (
-          <div>
-            <h2 className="text-2xl py-2">Items Puchased</h2>
-            <MyNFTs
-              loadingState={loadingState}
-              nfts={purchasedNfts}
-              sellNFT={sellNFT}
-              currentUser={currentUser}
-            />
-          </div>
-        )}
-      </div> */}
       <CreateSaleModal
         open={isOpen}
         setOpen={setIsOpen}
